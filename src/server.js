@@ -39,34 +39,72 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
+// Handle sign up request 
+app.post('/signup', (req, res) => {
+  const { username, password } = req.body;
+
+  // Verifica se o username já existe no banco de dados antes de inserir
+  connection.query(
+      'SELECT * FROM USER WHERE NOME = ?',
+      [username],
+      (err, results) => {
+          if (err) {
+              console.error('Error querying database:', err);
+              return res.status(500).json({ message: 'Internal server error' });
+          }
+
+          if (results.length === 0) {
+              // O username não existe, pode proceder com a inserção
+              connection.query(
+                  'INSERT INTO USER (NOME, SENHA) VALUES (?, ?)',
+                  [username, password],
+                  (err, results) => {
+                      if (err) {
+                          console.error('Error querying database:', err);
+                          return res.status(500).json({ message: 'Internal server error' });
+                      }
+
+                      return res.status(200).json({ message: 'User registered successfully' });
+                  }
+              );
+          } else {
+              // O username já existe, retorna um status de erro
+              return res.status(409).json({ message: 'Username already exists' });
+          }
+      }
+  );
+});
+
+
 // Handle login request
 app.post('/', (req, res) => {
-    const { username, password } = req.body;
-  
-    connection.query(
-      'SELECT * FROM USER WHERE NOME = ? AND SENHA = ?',
-      [username, password],
-      (err, results) => {
-        if (err) {
-          console.error('Error querying database:', err);
-          return res.status(500).json({ message: 'Internal server error' });
-        }
-  
-        if (results.length === 1) {
-          const authenticatedUser = {
-            nickname: username,
-          };
-          console.log(authenticatedUser);
-          return res.status(200).json({
-            message: 'Authenticated',
-            nickname: authenticatedUser // Adiciona o usuário autenticado ao objeto JSON de resposta
-          });
-        } else {
-          return res.status(401).json({ message: 'Unauthorized' });
-        }
+  const { username, password } = req.body;
+
+  connection.query(
+    'SELECT * FROM USER WHERE NOME = ? AND SENHA = ?',
+    [username, password],
+    (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ message: 'Internal server error' });
       }
-    );
-  });
+
+      if (results.length === 1) {
+        const authenticatedUser = {
+          nickname: username,
+        };
+        console.log(authenticatedUser);
+        return res.status(200).json({
+          message: 'Authenticated',
+          nickname: authenticatedUser // Adiciona o usuário autenticado ao objeto JSON de resposta
+        });
+      } else {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+    }
+  );
+});
+
 
 let messages = [];
 
