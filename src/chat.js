@@ -57,14 +57,14 @@ function Chat() {
       <h2 className={styles.heading}>Chat Express</h2>
       <div className={styles.messages}>
         {messages.map((msg, index) => (
-          <div key={index}>
+          <><div key={index}>
             <strong>{msg.author}: </strong> {msg.message}
-          </div>
+          </div><br /></>
         ))}
         {messages.length === 0 && <div>Nenhuma mensagem disponível.</div>}
       </div>
       <form onSubmit={sendMessage}>
-        <input
+        <input className={styles.chatInput}
           type="text"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}

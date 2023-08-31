@@ -57,7 +57,7 @@ function Login() {
         />
         <button className={styles.button}>Login</button>
         <label htmlFor="signup" className={`${styles.label} ${styles.signUp}`}>
-          <Link to="/signup">Não tem conta?</Link>
+          <Link to="/signup"style={{ textDecoration: 'none', color: 'inherit'}}>Não tem conta?</Link>
         </label>
       </form>
     </div>
@@ -65,4 +65,3 @@ function Login() {
 }  
 
 export default Login;
-
